@@ -1,0 +1,2 @@
+# HYDROBLT-Animated-Landing-Page-Design-with-Lightning-Thunder-Effects
+I designed a high-impact animated landing page for HYDROBLT, working with front-end development, CSS, JavaScript, animations, and web design. The page features lightning bolt and thunder effects, dynamic flashing text, and a dedicated “Join the Waiting List” section. The design is modern, fully responsive, and conversion-focused
