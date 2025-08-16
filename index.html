@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HYDROBLT — Thunder-Powered Landing</title>
+  <meta name="description" content="HYDROBLT: Recovery • Hydration • 20 grams of protein — Packed in one tinny shot. Join the waiting list." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="shortcut icon" type="image/x-icon" href="https://getchat.app/assets/img/favicon/android-icon-36x36.png">
+<link rel="icon" href="assets/images/custom-favicon.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;900&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #0a0c12;
+      --bg-2: #11131b;
+      --electric: #7df9ff; /* bolt cyan */
+      --bolt-core: #e6f9ff;
+      --accent: #8be9fd;
+      --text: #e6e6ea;
+      --muted: #9aa0a6;
+      --cta: #00d4ff;
+      --cta-dark: #00a8cc;
+      --ring: rgba(125, 249, 255, .5);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: 'Archivo', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial, 'Apple Color Emoji','Segoe UI Emoji';
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 70% -10%, #1b2233 0%, transparent 60%),
+                  radial-gradient(1000px 500px at 30% -20%, #1a1f2d 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    /* Subtle drifting clouds / rain shimmer */
+    .storm {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        radial-gradient(ellipse at 50% -20%, rgba(255,255,255,.03), transparent 60%),
+        repeating-linear-gradient(120deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px);
+      mix-blend-mode: screen;
+      animation: drift 20s linear infinite;
+    }
+    @keyframes drift {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 0 0, 600px 1200px; }
+    }
+   
+  
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(10,12,18,.72), rgba(10,12,18,.20), transparent);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .brand { font-weight: 900; letter-spacing: .08em; }
+    .brand span { color: var(--accent); text-shadow: 0 0 .6rem var(--accent); }
+
+    .sound-toggle {
+      appearance: none; border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.05); color: var(--text);
+      padding: 10px 14px; border-radius: 999px; cursor: pointer; font-weight: 600;
+    }
+    .sound-toggle:focus { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100svh; display: grid; place-items:full width;
+      padding: 0px 20px 20px 0px;
+      text-align: center;
+    }
+
+    .headline {
+      max-width: 900px;
+      line-height: 1.05;
+      font-weight: 900;
+      font-size: clamp(40px, 7vw, 96px);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .headline .glow { color: var(--electric); text-shadow: 0 0 1.2rem var(--electric), 0 0 2.4rem var(--electric); }
+
+    .subcopy {
+      margin-top: 14px; font-size: clamp(16px, 2.1vw, 22px); color: var(--muted);
+    }
+
+    /* Flashing verbiage */
+    .verbiage {
+      margin-top: 32px;
+      height: 52px; display: grid; place-items: center;
+      font-weight: 800; letter-spacing: .06em; font-size: clamp(20px, 3vw, 32px);
+    }
+    .verbiage span { opacity: 0; position: absolute; filter: drop-shadow(0 0 .6rem var(--accent)); }
+    .verbiage span.show { opacity: 1; animation: flicker 1.4s linear both; }
+
+    @keyframes flicker {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      25% { opacity: .6; }
+      35% { opacity: 1; }
+      45% { opacity: .7; }
+      55% { opacity: 1; }
+      100% { opacity: 1; }
+    }
+
+    /* Lightning bolt */
+    .bolt-wrap { position: absolute; inset: 0; display: grid; place-items: start center; pointer-events: none; }
+    .bolt { width: min(24vw, 160px); opacity: 0; transform: translateY(-120%); filter: drop-shadow(0 0 1.5rem var(--electric)); }
+    .bolt svg { display: block; width: 100%; height: auto; }
+
+    .flash-overlay { position: fixed; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 9; }
+
+    /* CTA reveal */
+    .product-name {
+      margin-top: 28px; font-size: clamp(34px, 5vw, 64px); font-weight: 900; letter-spacing: .18em;
+      color: var(--electric); text-shadow: 0 0 1rem var(--electric), 0 0 2rem var(--electric);
+      opacity: 0; transform: translateY(12px);
+    }
+
+    .cta {
+      margin-top: 36px; display: inline-flex; gap: 12px; align-items: center;
+    }
+    .cta a {
+      text-decoration: none; color: #061018; background: linear-gradient(180deg, var(--cta), var(--cta-dark));
+      padding: 14px 22px; border-radius: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+      border: 1px solid rgba(255,255,255,.18); box-shadow: 0 8px 24px rgba(0, 212, 255, .25);
+    }
+    .cta a:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(0, 212, 255, .35); }
+
+    /* Waitlist section */
+    section#waitlist {
+      position: relative; z-index: 1; padding: 72px 20px 110px; display: grid; place-items: center;
+      background: radial-gradient(800px 300px at 50% 0%, rgba(125,249,255,.08), transparent 60%);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .card {
+      width: min(760px, 92%); background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.12); border-radius: 24px; padding: 28px; box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+    }
+    .card h2 { margin: 0 0 6px; font-size: clamp(26px, 3.6vw, 36px); }
+    .card p { margin: 0 0 22px; color: var(--muted); }
+
+    form.waitlist {
+      display: grid; grid-template-columns: 1fr; gap: 12px;
+    }
+    @media (min-width: 640px) {
+      form.waitlist { grid-template-columns: 1fr auto; }
+    }
+    input[type="email"], input[type="text"] {
+      width: 100%; padding: 16px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06); color: var(--text); font-size: 16px;
+    }
+    input::placeholder { color: #c2c7cf; }
+    button[type="submit"] {
+      cursor: pointer; padding: 16px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,.18);
+      background: linear-gradient(180deg, var(--cta), var(--cta-dark)); color: #061018; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(0, 212, 255, .25);
+    }
+    button[type="submit"]:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(0,212,255,.35); }
+
+    .legal { margin-top: 12px; font-size: 13px; color: var(--muted); }
+
+    footer { position: relative; z-index: 1; padding: 28px 20px; text-align: center; color: var(--muted); }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      .storm, .verbiage span.show { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="storm" aria-hidden="true"></div>
+  <div class="flash-overlay" aria-hidden="true"></div>
+
+  <header>
+    <div class="container">
+            
+                        
+  <div class="brand"  style="color: white;">
+    <nav style="text-align: center; color: white; font-size: 30px; margin-left: 20px; margin-right: 10px;"><span>HYDRO</span>BLT &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+      &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+     <a href="#home" style="color: white;">Home</a>  &nbsp
+      <a href="#about" style="color: white;">About Us</a> &nbsp
+      <a href="#services" style="color: white;">Services </a> &nbsp
+      <a href="#contact" style="color: white;"> Contact Us</a> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp&nbsp
+       <button class="sound-toggle" id="soundBtn" aria-pressed="false" aria-label="Toggle thunder sound" style="font-size: 20px; "> Sound : 🔇Off/ 🔊On</button> 
+    </nav>
+   
+  
+
+  
+                         
+
+</div>
+  </header>
+
+  <main class="hero">
+   <!--  <div>
+      <h1 class="headline" aria-live="polite">
+        <span class="glow">Thunder in the background</span><br/>
+        Built for <span id="rotator" class="glow">Recovery</span>
+      </h1>
+      <p class="subcopy">Hit your reset with a lightning-fast boost.</p>
+
+      <div class="verbiage" aria-live="polite">
+        <span class="line" data-text="Recovery">Recovery</span>
+        <span class="line" data-text="Hydration">Hydration</span>
+        <span class="line" data-text="20 grams of protein">20 grams of protein</span>
+        <span class="line" data-text="Packed in one tinny shot">Packed in one tinny shot</span>
+      </div>
+
+      <div class="bolt-wrap" aria-hidden="true">
+        <div class="bolt" id="bolt">-->
+          <!-- Simplified lightning bolt SVG -->
+          <!--<svg viewBox="0 0 120 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lightning bolt">
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+              <linearGradient id="boltGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--bolt-core)"/>
+                <stop offset="100%" stop-color="var(--electric)"/>
+              </linearGradient>
+            </defs>
+            <path d="M70 0 L20 120 L58 120 L35 210 L100 100 L60 100 L90 0 Z"
+                  fill="url(#boltGrad)" filter="url(#glow)" stroke="var(--bolt-core)" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+      <div >-->
+    <div class="container">
+    <video autoplay muted loop>
+      
+        <source src="vedio/vedio1.mp4" type="video/mp4">
+      <div class="cta">
+        <a href="#waitlist" title="Join the waiting list">Join the Waiting List</a>
+      </div>
+     
+    </video>
+    
+
+      
+    </div>
+      
+      <div class="cta">
+        <a href="#waitlist" title="Join the waiting list" style="text-align: center;"> &nbsp&nbsp&nbsp&nbsp &nbsp&nbsp&nbsp&nbsp Join the Waiting List</a>
+      </div>
+    </div>
+  </main>
+
+  <section id="waitlist" style=" width: 80%;">
+    <div class="card">
+      <h2>Sign Up for Early Access to ⚡HYDROBLT.</h2>
+      <p> Hit your reset with a lightning-fast boost-HYDROBLT.</p>
+      <!-- RepSign Up for Early Access to lace the form action with your endpoint (e.g., Mailchimp, ConvertKit, Google Forms, or a simple backend). -->
+      <form class="waitlist" id="waitlistForm" action="#" method="post" novalidate>
+        <input type="email" name="email" id="email" placeholder="Enter your email" required aria-label="Email address" />
+        <button type="submit">Join the Waiting List</button>
+      </form>
+      <div class="legal" style=" font-size: 20px;">We respect your inbox. Unsubscribe anytime.</div>
+    </div>
+  </section>
+
+  <footer>
+    © <span id="year"></span> HYDROBLT. All rights reserved BY Web Developer Zannatul.
+  </footer>
+
+  <!-- Optional thunder audio (plays on first interaction if enabled) -->
+  <audio id="thunderAudio" preload="auto">
+    <!-- You can swap this with your own thunder SFX file path -->
+    <!-- <source src="/audio/thunder.mp3" type="audio/mpeg" /> -->
+  </audio>
+
+  <script>
+    // Utility: small sleep
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    // Rotating verbiage with flicker
+    const lines = Array.from(document.querySelectorAll('.verbiage .line'));
+    let idx = 0;
+    function showLine(i) {
+      lines.forEach(el => el.classList.remove('show'));
+      const el = lines[i % lines.length];
+      el.classList.add('show');
+      document.getElementById('rotator').textContent = el.dataset.text;
+    }
+
+    // Lightning strike sequence
+    const bolt = document.getElementById('bolt');
+    const productName = document.getElementById('productName');
+    const flash = document.querySelector('.flash-overlay');
+
+    async function strike() {
+      // Drop-in animation via JS for finer timing
+      bolt.style.transition = 'transform .35s cubic-bezier(.2,.8,.2,1), opacity .1s linear';
+      bolt.style.opacity = '1';
+      bolt.style.transform = 'translateY(8vh)';
+      // screen flash
+      flash.animate([{opacity:0},{opacity:1},{opacity:0}], {duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)'});
+      // reveal product name
+      productName.animate([{opacity:0, transform:'translateY(12px)'},{opacity:1, transform:'translateY(0)'}], {duration: 320, fill:'forwards', easing:'cubic-bezier(.2,.8,.2,1)'});
+      // glow pulse
+      bolt.animate([{filter:'drop-shadow(0 0 1rem var(--electric))'},{filter:'drop-shadow(0 0 2.2rem var(--electric))'},{filter:'drop-shadow(0 0 1rem var(--electric))'}], {duration: 500});
+      playThunder();
+      await sleep(1600);
+      // retract slightly
+      bolt.style.transform = 'translateY(-20vh)';
+      bolt.style.opacity = '0';
+    }
+
+    // Loop verbiage and trigger strike after one full cycle
+    async function startSequence() {
+      let cycles = 0;
+      while (true) {
+        showLine(idx++);
+        await sleep(1400);
+        if (idx % lines.length === 0) {
+          cycles++;
+          // Strike after each full set
+          await strike();
+        }
+      }
+    }
+
+    // Sound toggle (requires user gesture for autoplay policies)
+    const soundBtn = document.getElementById('soundBtn');
+    const thunder = document.getElementById('thunderAudio');
+    let soundOn = false;
+
+    function playThunder() {
+      if (!soundOn) return;
+      // If you add a real source file, uncomment below to play
+      // thunder.currentTime = 0; thunder.play().catch(()=>{});
+    }
+
+    function toggleSound() {
+      soundOn = !soundOn;
+      soundBtn.setAttribute('aria-pressed', String(soundOn));
+      soundBtn.textContent = soundOn ? '🔊 Sound: On' : '🔇 Sound: Off';
+      if (soundOn) { playThunder(); }
+    }
+
+    soundBtn.addEventListener('click', toggleSound);
+
+    // Handle form (demo only)
+    const form = document.getElementById('waitlistForm');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) return alert('Please enter a valid email.');
+      // Replace this with your integration (fetch to API/Mailchimp/etc.)
+      alert(`Thanks! ${email} is on the list ⚡`);
+      form.reset();
+    });
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Kick things off after first user interaction to respect motion/sound
+    function initOnce() {
+      document.removeEventListener('pointerdown', initOnce);
+      document.removeEventListener('keydown', initOnce);
+      startSequence();
+    }
+    document.addEventListener('pointerdown', initOnce);
+    document.addEventListener('keydown', initOnce);
+
+    // As a fallback (if no interaction), start sequence after 3s
+    setTimeout(() => { startSequence(); }, 3000);
+  </script>
+</body>
+</html>
